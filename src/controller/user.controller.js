@@ -10,36 +10,39 @@ const registerUser = asyncHandler(async (req, res) =>{
     if (
         [fullName, email, password, username].some((fields) => fields?.trim() === "")
     ) {
-        return new apiError([400, "All Fields are required"])
+        throw new apiError(400, "All Fields are required")
     }
 
-    const userExists = User.findOne({
+    const userExists = await User.findOne({
         $or: [{email}, {username}]
     })
 
     if(userExists){
-         throw new apiError([409, "User Already Exists"])
+         throw new apiError(409, "User Already Exists")
     }
 
-    const avatarLocalPath = req.files?.avatar[0]?.path
-    const coverImageLocalPath = req.files?.coverImage[0]?.path
+    const avatarLocalPath = req.files?.avatar?.[0]?.path
+    let coverImageLocalPath;
+    if(req.files && req.files.coverImage && Array.isArray(req.files.coverImage) && req.files.coverImage[0] > 0){
+        coverImageLocalPath = req.files.coverImage[0].path
+    }
 
-    if (!avatarLocalImage) {
-        throw new apiError([400, "avatar is required"])
+    if (!avatarLocalPath) {
+        throw new apiError(400, "avatar is required")
     }
 
     const avatar = await uploadOnCloudinary(avatarLocalPath)
     const coverImage = await uploadOnCloudinary(coverImageLocalPath)
 
     if(!avatar){
-        throw new apiError([400, "avatar is required"])
+        throw new apiError(400, "Failed to upload avatar to cloudinary")
     }
 
     const user = await User.create({
         username: username.toLowerCase(),
         fullName,
-        avatar: avatar,
-        coverImage: coverImage || "",
+        avatar: avatar.url,
+        coverImage: coverImage?.url || "",
         email,
         password, 
     })
@@ -47,13 +50,13 @@ const registerUser = asyncHandler(async (req, res) =>{
     const userCreated = await User.findById(user._id).select(
         "-password -refreshToken"
     )
-
-    if(userCreated){
+    
+    if(!userCreated){
         throw new apiError(500, "Something went wrong while creating the user")
     }
 
     return res.status(201).json(
-        new apiResponse(200, createdUser, "User registered successfully")
+        new apiResponse(200, userCreated, "User registered successfully")
     )
 })
 

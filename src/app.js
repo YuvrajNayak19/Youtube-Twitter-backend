@@ -25,4 +25,17 @@ import userRouter from './routes/user.routes.js '
 //routes decelration
 app.use('/api/v1/users', userRouter)
 
+// Error handling middleware
+app.use((err, req, res, next) => {
+    const statusCode = err.statusCode || 500
+    const message = err.message || "Something went wrong"
+    
+    res.status(statusCode).json({
+        success: false,
+        statusCode,
+        message,
+        errors: err.errors || []
+    })
+})
+
 export { app }

@@ -21,7 +21,7 @@ const userSchema = new Schema(
         },
         password: {
             type: String,
-            required: [true, 'Password is required'],
+            required: true,
         },
         fullName: {
             type: String,
@@ -49,11 +49,10 @@ const userSchema = new Schema(
     }, { timestamps: true }
 )
 
-userSchema.pre('save', async function (next) {
-    if(!this.isModified('password')) return next()
+userSchema.pre('save', async function () {
+    if(!this.isModified('password')) return null
 
         this.password = await bcrypt.hash(this.password, 10)
-        next()
 })
 
 userSchema.methods.isPasswordCorrect = async function (password) {
@@ -68,9 +67,9 @@ userSchema.methods.genreateAccessToken = function () {
             fullName: this.fullName,
             username: this.username,
         },
-        procces.env.ACCESS_TOKEN_SECRET,
+        process.env.ACCESS_TOKEN_SECRET,
         {
-            expiresIn: procces.env.ACCESS_TOKEN_EXPIRY
+            expiresIn: process.env.ACCESS_TOKEN_EXPIRY
         }
     )
 }
@@ -80,9 +79,9 @@ userSchema.methods.genreateRefreshToken = function () {
         {
             _id: this._id,
         },
-        procces.env.REFRESH_TOKEN_SCERET,
+        process.env.REFRESH_TOKEN_SCERET,
         {
-            expiresIn: procces.env.REFRESH_TOKEN_EXPIRY
+            expiresIn: process.env.REFRESH_TOKEN_EXPIRY
         }
     )
 }
