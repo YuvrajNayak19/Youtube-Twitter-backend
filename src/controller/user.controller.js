@@ -3,6 +3,7 @@ import { apiError } from '../utlis/apiError.js'
 import { User } from '../models/user.model.js'
 import { uploadOnCloudinary } from '../utlis/cloudinary.js'
 import { apiResponse } from '../utlis/apiResponse.js';
+import jwt from 'jsonwebtoken'
 
 const genrateAccessAndRefereshToken = async(userId) =>{
     try {
@@ -112,7 +113,7 @@ const loginUser = asyncHandler(async ( req, res ) => {
         new apiResponse(
             200,
             {
-                user: refreshToken, loggedinUser, accessToken
+                user: refreshToken, loggedInUser, accessToken
             },
             "User logged in successfully"
         )
@@ -146,8 +147,55 @@ const logoutUser = asyncHandler(async ( req, res ) => {
     )
 })
 
+const refreshAccessToken = asyncHandler(async ( req, res ) => {
+    const incomingRefreshToken = req.cookies.refreshToken || req.body.refreshToken
+
+    if(!incomingRefreshToken){
+        throw new apiError(401, "unauthorized request")
+    }
+
+    try {
+        const decodedToken = jwt.verify(
+            incomingRefreshToken,
+            process.env.REFRESH_TOKEN_SCERET
+        )
+    
+        const user = await User.findbyId(decodedToken?._id)
+    
+        if(!user){
+            throw new apiError(401, "Invaild refresh Token")
+        }
+    
+        if( incomingRefreshToken !== user?.refreshToken){
+            throw new apiError(401, "Refresh Token is exprired or used")
+        }
+    
+        const option ={
+            httpOnly: true,
+            secure: true
+        }
+    
+        const {accessToken, newRefreshToken} = await genrateAccessAndRefereshToken(user._id)
+    
+        return res
+        .status(200)
+        .cookie('accessToken', accessToken)
+        .cookie('refreshToken', newRefreshToken)
+        .json(
+            apiResponse(
+                200,
+                {accessToken, refreshToken: newRefreshToken},
+                "Access Token Refreshed"
+            )
+        )
+    } catch (error) {
+        throw new apiError(401, error?.message || "Invaild Access Token")
+    }
+})
+
 export { 
     registerUser, 
     loginUser,
-    logoutUser
+    logoutUser,
+    refreshAccessToken
  }
