@@ -149,7 +149,7 @@ const logoutUser = asyncHandler(async ( req, res ) => {
 })
 
 const refreshAccessToken = asyncHandler(async ( req, res ) => {
-    const incomingRefreshToken = req.cookies.refreshToken || req.body.refreshToken
+    const incomingRefreshToken = req.cookies?.refreshToken !== "undefined" ? req.cookies?.refreshToken : req.body?.refreshToken
 
     if(!incomingRefreshToken){
         throw new apiError(401, "unauthorized request")
@@ -161,7 +161,7 @@ const refreshAccessToken = asyncHandler(async ( req, res ) => {
             process.env.REFRESH_TOKEN_SCERET
         )
     
-        const user = await User.findbyId(decodedToken?._id)
+        const user = await User.findById(decodedToken?._id)
     
         if(!user){
             throw new apiError(401, "Invaild refresh Token")
@@ -180,10 +180,10 @@ const refreshAccessToken = asyncHandler(async ( req, res ) => {
     
         return res
         .status(200)
-        .cookie('accessToken', accessToken)
-        .cookie('refreshToken', newRefreshToken)
+        .cookie('accessToken', accessToken, option)
+        .cookie('refreshToken', newRefreshToken, option)
         .json(
-            apiResponse(
+            new apiResponse(
                 200,
                 {accessToken, refreshToken: newRefreshToken},
                 "Access Token Refreshed"
@@ -198,7 +198,7 @@ const updateCurrentPassword = asyncHandler(async ( req, res ) =>{
     const { oldPassword, newPassword } = req.body
 
     const user = await User.findById(req.user?._id)
-    await user.isPasswordCorrect(oldPassword)
+    const isPasswordCorrect = await user.isPasswordCorrect(oldPassword)
 
     if(!isPasswordCorrect){
         throw new apiError(400, 'Invaild old password')
@@ -228,31 +228,31 @@ const getCurrentUser = asyncHandler(async ( req, res ) =>{
     ))
 })
 
-const updateAccountDetails = asyncHandler(async ( req, res ) =>{
-    const {fullName, email} = req.body
+const updateAccountDetails = asyncHandler(async (req, res) => {
+    const { fullName, email } = req.body
 
-    if(!fullName || !email){
+    if (!fullName?.trim() && !email?.trim()) {
         throw new apiError(400, "All fields are required")
     }
 
-    const user = User.findByIdAndUpdate(
+    const user = await User.findByIdAndUpdate(
         req.user?.id,
         {
             $set: {
-                fullName: fullName,
-                email: email,
+                fullName,
+                email,
             }
         },
-        {new: true}
+        { new: true }
     ).select("-password")
 
-    return res
-    .status(200)
-    .json(apiResponse(
-        200, 
-        user,
-        "Account details udated successfully"
-    ))
+    return res.status(200).json(
+        new apiResponse(
+            200,
+            user,
+            "Account details updated successfully"
+        )
+    )
 })
 
 const updateAvatar = asyncHandler(async ( req, res ) => {
@@ -281,7 +281,7 @@ const updateAvatar = asyncHandler(async ( req, res ) => {
     return res
     .status(200)
     .json(
-        apiError(
+        new apiResponse(
             200,
             user,
             "Avatar image updated successfully"
@@ -315,7 +315,7 @@ const updateCoverImage = asyncHandler(async ( req, res ) => {
     return res
     .status(200)
     .json(
-        apiError(
+        new apiResponse(
             200,
             user,
             "CoverImage updated successfully"
@@ -334,19 +334,25 @@ const getUserChannelProfile = asyncHandler(async ( req, res ) =>{
         {
             $match: {
                 username: username?.toLowerCase()
-            },
+            }
+        },
+        {
             $lookup: {
                 from: "subscriptions",
                 localField: "_id",
                 foreignField: "channel",
                 as: "subcribers"
-            },
+            }
+        },
+        {
             $lookup: {
-                form: "subscriptions",
+                from: "subscriptions",
                 localField: "_id",
                 foreignField: "subcriber",
                 as: "subcribedTo"
-            },
+            }
+        },
+        {
             $addFields: {
                 subscriberCount: {
                     $size: "$subcribers"
@@ -365,7 +371,7 @@ const getUserChannelProfile = asyncHandler(async ( req, res ) =>{
         },
         {
             $project: {
-                fullname: 1,
+                fullName: 1,
                 email: 1,
                 avatar: 1,
                 coverImage: 1,
@@ -373,7 +379,7 @@ const getUserChannelProfile = asyncHandler(async ( req, res ) =>{
                 username: 1,
                 _id: 1,
                 subscriberCount: 1,
-                channelsSubribedToCount: 1,
+                channelsSubribedToCount: 1
             }
         }
     ])
@@ -398,7 +404,9 @@ const getUserWatchHistory = asyncHandler(async ( req, res ) =>{
         {
             $match: {
                 _id: new mongoose.Types.ObjectId(req.user._id)
-            },
+            }
+        },
+        {
             $lookup: {
                 from: "videos",
                 localField: "watchHistory",
@@ -408,7 +416,7 @@ const getUserWatchHistory = asyncHandler(async ( req, res ) =>{
                     {
                         $lookup: {
                             from: "users",
-                            localfiled: "owner",
+                            localField: "owner",
                             foreignField: "_id",
                             as: "owner",
                                 pipeline: [
