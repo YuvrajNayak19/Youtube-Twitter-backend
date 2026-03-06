@@ -1,7 +1,6 @@
 import { asyncHandler } from "../utlis/asyncHandler";
 import { apiError } from "../utlis/apiError";
 import { apiResponse } from "../utlis/apiResponse";
-import { User } from "../models/user.model,js";
 import { Video }  from "../models/video.model.js"
 import { uploadOnCloudinary } from "../utlis/cloudinary";
 
