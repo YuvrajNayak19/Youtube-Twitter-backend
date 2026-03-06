@@ -14,7 +14,6 @@ import {
 } from '../controller/user.controller.js'
 import { upload } from '../middleware/multer.middleware.js'
 import { verifyJWT } from '../middleware/auth.middleware.js'
-import { get } from 'mongoose'
 
 const router = Router()
 
