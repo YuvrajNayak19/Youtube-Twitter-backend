@@ -1,9 +1,9 @@
 import mongoose from "mongoose"
 import {Video} from "../models/video.model.js"
 import {Subscription} from "../models/subscription.model.js"
-import {Like} from "../models/like.model.js"
-import {ApiResponse} from "../utils/ApiResponse.js"
-import {asyncHandler} from "../utils/asyncHandler.js"
+import {Like} from "../models/likes.model.js"
+import {apiResponse} from "../utlis/apiResponse.js"
+import {asyncHandler} from "../utlis/asyncHandler.js"
 
 const getChannelStats = asyncHandler(async (req, res) => {
     
@@ -63,7 +63,7 @@ const getChannelStats = asyncHandler(async (req, res) => {
     return res 
     .status(200)
     .json(
-        new ApiResponse(200, status, "Channel status fetched successfully")
+        new apiResponse(200, status, "Channel status fetched successfully")
     )
 })
 

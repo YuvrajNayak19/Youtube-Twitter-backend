@@ -1,6 +1,6 @@
-import { apiError } from '../utlis/apiError'
-import { apiRespone, apiResponse } from '../utlis/apiResponse'
-import { asyncHandler } from '../utlis/asyncHandler'
+import { apiError } from '../utlis/apiError.js'
+import { apiResponse } from '../utlis/apiResponse.js'
+import { asyncHandler } from '../utlis/asyncHandler.js'
 import { Like } from '../models/likes.model.js'
 
 const toggleVideoLike = asyncHandler(async ( req, res ) =>{

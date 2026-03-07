@@ -1,6 +1,6 @@
-import { asyncHandler } from "../utlis/asyncHandler";
-import { apiError } from "../utlis/apiError";
-import { apiResponse } from "../utlis/apiResponse";
+import { asyncHandler } from "../utlis/asyncHandler.js";
+import { apiError } from "../utlis/apiError.js";
+import { apiResponse } from "../utlis/apiResponse.js";
 import { Tweet } from "../models/tweet.model.js"
 
 const createTweet = asyncHandler(async ( req, res ) =>{

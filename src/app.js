@@ -21,14 +21,14 @@ app.use(cookieParser())
 
 //routes import
 import userRouter from './routes/user.routes.js'
-import healthcheckRouter from "./routes/healthcheck.routes.js"
+import healthcheckRouter from "./routes/healthcheck.router.js"
 import tweetRouter from "./routes/tweet.routes.js"
 import subscriptionRouter from "./routes/subscription.routes.js"
 import videoRouter from "./routes/video.routes.js"
-import commentRouter from "./routes/comment.routes.js"
-import likeRouter from "./routes/like.routes.js"
-import playlistRouter from "./routes/playlist.routes.js"
-import dashboardRouter from "./routes/dashboard.routes.js"
+import commentRouter from "./routes/comment.router.js"
+import likeRouter from "./routes/like.router.js"
+import playlistRouter from "./routes/playlist.router.js"
+import dashboardRouter from "./routes/dashboard.router.js"
 
 //routes decelration
 app.use("/api/v1/healthcheck", healthcheckRouter)

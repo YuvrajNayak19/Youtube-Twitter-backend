@@ -1,6 +1,6 @@
-import { apiError } from "../utlis/apiError"
-import { apiResponse } from "../utlis/apiResponse"
-import { asyncHandler } from "../utlis/asyncHandler"
+import { apiError } from "../utlis/apiError.js"
+import { apiResponse } from "../utlis/apiResponse.js"
+import { asyncHandler } from "../utlis/asyncHandler.js"
 import { Comment } from "../models/comment.model.js"
 
 const getVideoComment = asyncHandler(async ( req, res ) =>{

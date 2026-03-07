@@ -1,5 +1,5 @@
-import { asyncHandler } from "../utlis/asyncHandler"
-import { apiResponse } from '../utlis/apiResponse'
+import { asyncHandler } from "../utlis/asyncHandler.js"
+import { apiResponse } from '../utlis/apiResponse.js'
 
 const healthcheck = asyncHandler(async (req, res) => {
     return res.status(200).json(

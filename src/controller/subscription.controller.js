@@ -1,9 +1,9 @@
-import { asyncHandler } from "../utlis/asyncHandler";
-import { apiError } from "../utlis/apiError";
-import { apiResponse } from "../utlis/apiResponse";
-import { Subcription, Subscription } from "../models/subcripition.model.js"
+import { asyncHandler } from "../utlis/asyncHandler.js";
+import { apiError } from "../utlis/apiError.js";
+import { apiResponse } from "../utlis/apiResponse.js";
+import { Subscription } from "../models/subscription.model.js"
 
-const toggleSubcription = asyncHandler(async ( req, res ) =>{
+const toggleSubscription = asyncHandler(async ( req, res ) =>{
     const { channelId } = req.params
     const userId = req.user._id
 
@@ -11,7 +11,7 @@ const toggleSubcription = asyncHandler(async ( req, res ) =>{
         throw new apiError(400, "Channel ID is required")
     }
 
-    const existingSubcripition = await Subcription.findOne({
+    const existingSubscription = await Subscription.findOne({
         subscriber: userId,
         channel: channelId,
     }) 
@@ -26,7 +26,7 @@ const toggleSubcription = asyncHandler(async ( req, res ) =>{
         )
     }
 
-    const subscription = await Subcription.create({
+    const subscription = await Subscription.create({
         subscriber: userId,
         channel: channelId 
     })
@@ -38,10 +38,10 @@ const toggleSubcription = asyncHandler(async ( req, res ) =>{
     )
 })
 
-const getUserChannelSubcribers = asyncHandler(async ( req, res ) =>{
+const getUserChannelSubscribers = asyncHandler(async ( req, res ) =>{
     const { channelId } = req.params
 
-    const subcribers = await Subcription.find({channel: channelId})
+    const subscribers = await Subscription.find({channel: channelId})
     .populate("subcriber","username avatar fullName")
 
     return res
@@ -51,10 +51,10 @@ const getUserChannelSubcribers = asyncHandler(async ( req, res ) =>{
     )
 })
 
-const getSubcribedChannels = asyncHandler(async ( req, res ) =>{
+const getSubscribedChannels = asyncHandler(async ( req, res ) =>{
     const { subcriberId } = req.params
     
-    const channels = await Subcription.find({ subcriber: subcriberId})
+    const channels = await Subscription.find({ subscriber: subscriberId})
     .populate("channels", "username avatar fullname")
 
 return res
@@ -65,7 +65,7 @@ new apiResponse(200, channels, "Subcribed Channels fetched successfully")
 })
 
 export {
-    toggleSubcription,
-    getUserChannelSubcribers,
-    getSubcribedChannels,
+    toggleSubscription,
+    getUserChannelSubscribers,
+    getSubscribedChannels,
 }

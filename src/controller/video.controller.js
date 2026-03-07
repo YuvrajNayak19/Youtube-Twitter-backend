@@ -1,8 +1,8 @@
-import { asyncHandler } from "../utlis/asyncHandler";
-import { apiError } from "../utlis/apiError";
-import { apiResponse } from "../utlis/apiResponse";
+import { asyncHandler } from "../utlis/asyncHandler.js";
+import { apiError } from "../utlis/apiError.js";
+import { apiResponse } from "../utlis/apiResponse.js";
 import { Video }  from "../models/video.model.js"
-import { uploadOnCloudinary } from "../utlis/cloudinary";
+import { uploadOnCloudinary } from "../utlis/cloudinary.js";
 
 const getAllVideoes = asyncHandler(async ( res, req ) =>{
 

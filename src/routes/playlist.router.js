@@ -4,11 +4,11 @@ import {
     createPlaylist,
     deletePlaylist,
     getPlaylistById,
-    getUserPlaylists,
+    getUserPlaylist,
     removeVideoFromPlaylist,
     updatePlaylist,
-} from "../controllers/playlist.controller.js"
-import {verifyJWT} from "../middlewares/auth.middleware.js"
+} from "../controller/playlist.contoller.js"
+import {verifyJWT} from "../middleware/auth.middleware.js"
 
 const router = Router();
 
@@ -25,6 +25,6 @@ router
 router.route("/add/:videoId/:playlistId").patch(addVideoToPlaylist);
 router.route("/remove/:videoId/:playlistId").patch(removeVideoFromPlaylist);
 
-router.route("/user/:userId").get(getUserPlaylists);
+router.route("/user/:userId").get(getUserPlaylist);
 
 export default router

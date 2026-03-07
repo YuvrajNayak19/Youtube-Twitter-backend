@@ -1,7 +1,7 @@
-import { asyncHandler } from "../utlis/asyncHandler";
-import { apiError } from "../utlis/apiError";
-import { apiResponse } from "../utlis/apiResponse";
-import { Playlist } from "../models/playlist.model";
+import { asyncHandler } from "../utlis/asyncHandler.js";
+import { apiError } from "../utlis/apiError.js";
+import { apiResponse } from "../utlis/apiResponse.js";
+import { Playlist } from "../models/playlist.model.js";
 
 const createPlaylist = asyncHandler(async ( req, res ) =>{
     const { name, description } = req.body
