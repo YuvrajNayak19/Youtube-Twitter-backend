@@ -33,7 +33,7 @@ const addComment = asyncHandler(async ( req, res ) =>{
     const comment = await Comment.create({
         video: videoId,
         content,
-        owner: req.user_.id
+        owner: req.user._id
     })
 
     return res
@@ -47,7 +47,7 @@ const updateComment = asyncHandler(async ( req, res ) =>{
     const { commentId } = req.params
     const { content } = req.body
 
-    const comment = await Comment.findById(CommentId)
+    const comment = await Comment.findById(commentId)
 
     if(!comment){
         throw new apiError(400, "Comment not found")

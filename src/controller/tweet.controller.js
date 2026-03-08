@@ -33,7 +33,7 @@ const getUserTweet = asyncHandler(async ( req, res ) =>{
         .sort({ createdAt: -1 })
 
     return res
-    .stauts(200)
+    .status(200)
     .json(
         new apiResponse(200, tweets, "Tweets fetched successfully")
     )

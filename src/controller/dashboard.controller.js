@@ -73,6 +73,12 @@ const getChannelVideos = asyncHandler(async (req, res) => {
     const videos = await Video.find({
         owner: channelId
     }).sort({ createdAt: -1 })
+
+    return res
+    .status(200)
+    .json(
+        new apiResponse(200, videos, "Channel Videos fetched successfully")
+    )
 })
 
 export {

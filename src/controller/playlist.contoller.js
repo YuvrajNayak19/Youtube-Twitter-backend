@@ -29,21 +29,21 @@ const createPlaylist = asyncHandler(async ( req, res ) =>{
 })
 
 const getUserPlaylist = asyncHandler(async ( req, res ) =>{
-    const { userId } = req.body
+    const { userId } = req.params
 
-    const playlist = await playlist.findById({owner: userId})
+    const playlists = await Playlist.find({ owner: userId })
 
     return res
     .status(200)
     .json(
-        new apiResponse(200, playlist, "playlist fetched successfully")
+        new apiResponse(200, playlists, "Playlists fetched successfully")
     )
 })
 
 const getPlaylistById = asyncHandler(async ( req, res ) =>{
     const { playlistId } = req.params
 
-    const playlist = await Playlist.findById({playlistId})
+    const playlist = await Playlist.findById(playlistId)
     .populate("videos")
     .populate("owner", "username avatar")
 
@@ -97,24 +97,25 @@ const removeVideoFromPlaylist = asyncHandler(async ( req, res ) =>{
 const deletePlaylist = asyncHandler(async ( req, res ) =>{
     const { playlistId } = req.params
 
-    await Playlist.findbyIdAndDelete(playlistId)
+    await Playlist.findByIdAndDelete(playlistId)
 
     return res
     .status(200)
     .json(
         new apiResponse(200, {}, "Playlist deleted Successfully")
-    )
+        )
 })
 
 const updatePlaylist = asyncHandler(async ( req, res ) =>{
     const { playlistId } = req.params
-    const { title, description } = req.body
+    const { name, description } = req.body
+
 
     const playlist = await Playlist.findByIdAndUpdate(
         playlistId,
         {
             $set:{
-                title: title,
+                name: name,
                 description: description,
             }
         },

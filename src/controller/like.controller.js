@@ -17,7 +17,7 @@ const toggleVideoLike = asyncHandler(async ( req, res ) =>{
         return res
         .status(200)
         .json(
-            new apiRespone(200, {}, "Video unliked successfully")
+            new apiResponse(200, {}, "Video unliked successfully")
         )
     }
 
@@ -36,9 +36,9 @@ const toggleVideoLike = asyncHandler(async ( req, res ) =>{
 const toggleTweetLike = asyncHandler(async ( req, res ) =>{
     const { tweetId } = req.params
 
-    const existingLike = await Like.findOne({
+   const existingLike = await Like.findOne({
         tweet: tweetId,
-        likeBy: req.user._id
+        likedBy: req.user._id
     })
 
     if(existingLike){
@@ -47,19 +47,19 @@ const toggleTweetLike = asyncHandler(async ( req, res ) =>{
         return res
         .status(200)
         .json(
-            new apiRespone(200, {}, "Tweet Unliked successfully")
+            new apiResponse(200, {}, "Tweet unliked successfully")
         )
     }
 
     const like = Like.create({
         tweet: tweetId,
-        likeBy: req.user._id
+        likedBy: req.user._id
     })
 
     return res
     .status(200)
     .json(
-        new apiRespone(200, like, "Tweet Liked syccessfully")
+        new apiResponse(200, like, "Tweet Liked Successfully")
     )
 })
 
@@ -68,7 +68,7 @@ const toggleCommentLike = asyncHandler(async ( req, res ) =>{
 
     const existingLike = await Like.findOne({
         comment: commentId,
-        likeBy: req.user._id
+        likedBy: req.user._id
     })
 
     if(existingLike){
@@ -77,11 +77,11 @@ const toggleCommentLike = asyncHandler(async ( req, res ) =>{
         return res
         .status(200)
         .json(
-            new apiRespone(200, {}, "Comment Unlilked successfully")
+            new apiResponse(200, {}, "Comment unliked successfully")
         )
     }
 
-    const like = await Like.create({
+    const like = Like.create({
         comment: commentId,
         likedBy: req.user._id
     })
@@ -89,7 +89,7 @@ const toggleCommentLike = asyncHandler(async ( req, res ) =>{
     return res
     .status(200)
     .json(
-        new apiRespone(200, like, "Comment Liked successfully")
+        new apiResponse(200, like, "Comment Liked Successfully")
     )
 })
 
@@ -97,7 +97,7 @@ const getAllLikedVideos = asyncHandler(async ( req, res ) =>{
     
     const likedVideos = await Like.find({
         likedBy: req.user._id,
-        videos: { existing: true}
+        video: { $exists: true, $ne: null }
     }).populate({
         path: "video",
         populate:{
@@ -109,7 +109,7 @@ const getAllLikedVideos = asyncHandler(async ( req, res ) =>{
     return res
     .status(200)
     .json(
-        new apiRespone(200, likedVideos, "LIked Video fetched Successfully")
+        new apiResponse(200, likedVideos, "Liked Video fetched Successfully")
     )
 })
 

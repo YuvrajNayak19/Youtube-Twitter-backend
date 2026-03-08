@@ -16,8 +16,8 @@ const toggleSubscription = asyncHandler(async ( req, res ) =>{
         channel: channelId,
     }) 
 
-    if(existingSubcripition){
-        await Subscription.findByIdAndDelete(existingSubcripition._id)
+    if(existingSubscription){
+        await Subscription.findByIdAndDelete(existingSubscription._id)
 
         return res
         .status(200)
@@ -42,20 +42,20 @@ const getUserChannelSubscribers = asyncHandler(async ( req, res ) =>{
     const { channelId } = req.params
 
     const subscribers = await Subscription.find({channel: channelId})
-    .populate("subcriber","username avatar fullName")
+    .populate("subscriber","username avatar fullName")
 
     return res
     .status(200)
     .json(
-        new apiResponse(200, subcribers, "Channel subcribers fecthed successfully")
+        new apiResponse(200, subscribers, "Channel subcribers fecthed successfully")
     )
 })
 
 const getSubscribedChannels = asyncHandler(async ( req, res ) =>{
-    const { subcriberId } = req.params
+    const { subscriberId } = req.params
     
     const channels = await Subscription.find({ subscriber: subscriberId})
-    .populate("channels", "username avatar fullname")
+    .populate("channel", "username avatar fullName")
 
 return res
     .status(200)
