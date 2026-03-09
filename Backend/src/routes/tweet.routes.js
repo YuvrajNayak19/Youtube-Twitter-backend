@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import {
+    getAllTweets,
     createTweet,
     deleteTweet,
     getUserTweet,
@@ -10,7 +11,7 @@ import {verifyJWT} from "../middleware/auth.middleware.js"
 const router = Router();
 router.use(verifyJWT); 
 
-router.route("/").post(createTweet);
+router.route("/").get(getAllTweets).post(createTweet);
 router.route("/user/:userId").get(getUserTweet);
 router.route("/:tweetId").patch(updateTweet).delete(deleteTweet);
 

@@ -26,10 +26,30 @@ const createTweet = asyncHandler(async ( req, res ) =>{
     )
 })
 
+const getAllTweets = asyncHandler(async (req, res) => {
+    let { page = 1, limit = 30 } = req.query
+    page = parseInt(page, 10) || 1
+    limit = parseInt(limit, 10) || 30
+    const skip = (page - 1) * limit
+
+    const tweets = await Tweet.find({})
+        .populate("owner", "username fullName avatar")
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+
+    return res
+    .status(200)
+    .json(
+        new apiResponse(200, tweets, "Tweet feed fetched successfully")
+    )
+})
+
 const getUserTweet = asyncHandler(async ( req, res ) =>{
     const { userId } = req.params
     
     const tweets = await Tweet.find({ owner: userId})
+        .populate("owner", "username fullName avatar")
         .sort({ createdAt: -1 })
 
     return res
@@ -91,6 +111,7 @@ const deleteTweet = asyncHandler(async ( req, res ) =>{
 })
 
 export {
+    getAllTweets,
     createTweet,
     getUserTweet,
     updateTweet,

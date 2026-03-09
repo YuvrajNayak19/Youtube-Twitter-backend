@@ -6,9 +6,12 @@ import { uploadOnCloudinary } from "../utlis/cloudinary.js";
 
 const getAllVideoes = asyncHandler(async ( req, res ) =>{
 
-    const { page = 1, limit = 10, query, sortBy = "createdAt", sortType = "desc", userId} = req.query
+    let { page = 1, limit = 10, query, sortBy = "createdAt", sortType = "desc", userId } = req.query
 
-    const skip = ( page -1 ) * limit 
+    // convert strings to numbers (req.query values are always strings)
+    page = parseInt(page, 10) || 1
+    limit = parseInt(limit, 10) || 10
+    const skip = (page - 1) * limit
 
     // build base filter
     let filter = {}
@@ -17,9 +20,11 @@ const getAllVideoes = asyncHandler(async ( req, res ) =>{
         // when querying for a specific user, ignore publication status so owner sees all
         filter.owner = userId
     } else {
-        // default: only published videos
+        // default feed: published videos + legacy docs where flag may be missing/string
         filter.$or = [
-            { isPublished: true } // fallback for legacy documents
+            { isPublished: true },
+            { isPublished: "true" },
+            { isPublished: { $exists: false } }
         ]
     }
 
@@ -135,7 +140,11 @@ const publishVideo = asyncHandler(async ( req, res ) =>{
 const getVideoById = asyncHandler(async ( req, res ) =>{
     const { videoId } = req.params
     
-    const video = await Video.findById(videoId)
+    const video = await Video.findByIdAndUpdate(
+        videoId,
+        { $inc: { views: 1 } },
+        { new: true }
+    ).populate("owner", "username fullName avatar")
 
     if(!video){
         throw new apiError(404, "Video not found")

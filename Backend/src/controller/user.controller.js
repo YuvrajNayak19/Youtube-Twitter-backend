@@ -39,10 +39,7 @@ const registerUser = asyncHandler(async ( req, res ) =>{
     }
 
     const avatarLocalPath = req.files?.avatar?.[0]?.path
-    let coverImageLocalPath;
-    if(req.files && req.files.coverImage && Array.isArray(req.files.coverImage) && req.files.coverImage[0] > 0){
-        coverImageLocalPath = req.files.coverImage[0].path
-    }
+    const coverImageLocalPath = req.files?.coverImage?.[0]?.path
 
     if (!avatarLocalPath) {
         throw new apiError(400, "avatar is required")
@@ -99,7 +96,7 @@ const loginUser = asyncHandler(async ( req, res ) => {
 
       const { accessToken, refreshToken } = await genrateAccessAndRefereshToken(user._id)
 
-      const loggedInUser = await User.findById(user._id).select(-password -refreshToken)
+      const loggedInUser = await User.findById(user._id).select("-password -refreshToken")
 
       const options = {
         httpOnly : true,
@@ -114,7 +111,7 @@ const loginUser = asyncHandler(async ( req, res ) => {
         new apiResponse(
             200,
             {
-                user: refreshToken, loggedInUser, accessToken
+                user: loggedInUser, accessToken, refreshToken
             },
             "User logged in successfully"
         )
@@ -135,7 +132,7 @@ const logoutUser = asyncHandler(async ( req, res ) => {
 
     )
     const options = {
-        htppOnly: true,
+        httpOnly: true,
         secure: true,
     }
 
